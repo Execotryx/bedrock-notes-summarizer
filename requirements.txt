@@ -1,0 +1,4 @@
+boto3
+python-dotenv
+pydantic
+boto3-stubs[bedrock-runtime,bedrock,lambda,s3]
