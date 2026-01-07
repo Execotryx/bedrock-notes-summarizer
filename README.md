@@ -2,6 +2,8 @@
 
 An AWS Lambda function that automatically summarizes meeting notes using AWS Bedrock's DeepSeek V3 model. The service processes multipart email messages, generates concise summaries with key points and action items, and stores them in Amazon S3 with intelligent file naming.
 
+> **⚠️ Note:** This is a prototype/demo project and is **not production-ready**. It is intended for learning and experimentation purposes. Use at your own risk and ensure proper security, error handling, and testing before considering any production use.
+
 ## Features
 
 - **AI-Powered Summarization**: Leverages AWS Bedrock's DeepSeek V3 model for intelligent meeting notes summarization
@@ -178,91 +180,6 @@ s3://meeting-notes-summaries-bucket/
 │   │   │   └── budget-review-discussion-summary.txt
 │   │   └── 9/
 │   │       └── product-launch-meeting-summary.txt
-```
-
-## Deployment
-
-### Deploy to AWS Lambda
-
-1. **Create a deployment package:**
-
-```bash
-# Create a directory for the deployment package
-mkdir lambda-package
-cd lambda-package
-
-# Install dependencies
-pip install -r ../requirements.txt -t .
-
-# Copy the Lambda function
-cp ../lambda_function.py .
-
-# Create a ZIP file
-zip -r ../lambda-deployment.zip .
-cd ..
-```
-
-2. **Create the Lambda function:**
-
-```bash
-aws lambda create-function \
-  --function-name bedrock-notes-summarizer \
-  --runtime python3.9 \
-  --role arn:aws:iam::YOUR_ACCOUNT_ID:role/YOUR_LAMBDA_ROLE \
-  --handler lambda_function.lambda_handler \
-  --zip-file fileb://lambda-deployment.zip \
-  --timeout 60 \
-  --memory-size 512
-```
-
-3. **Update function configuration (if needed):**
-
-```bash
-aws lambda update-function-configuration \
-  --function-name bedrock-notes-summarizer \
-  --timeout 60 \
-  --memory-size 512
-```
-
-### IAM Permissions
-
-Create an IAM role with the following policy:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "bedrock:InvokeModel",
-        "bedrock-runtime:Converse"
-      ],
-      "Resource": "arn:aws:bedrock:eu-north-1::foundation-model/deepseek.v3-v1:0"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:CreateBucket",
-        "s3:PutObject",
-        "s3:HeadBucket"
-      ],
-      "Resource": [
-        "arn:aws:s3:::meeting-notes-summaries-bucket",
-        "arn:aws:s3:::meeting-notes-summaries-bucket/*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "arn:aws:logs:*:*:*"
-    }
-  ]
-}
 ```
 
 ## Development
